@@ -47,23 +47,19 @@ jobs:
         run: mvn -B test
         working-directory: api
 
-  image-build:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
       - name: 'Authenticating to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-      - name: 'Run Cloud Build'
+      - name: 'Build docker image with Cloud Build'
         run: 
           gcloud builds submit --config cloudbuild_img.yaml
 
 
    # Job for Google Cloud Build and Packer
   packer-build:
-    needs: image-build  # Ensure tests pass before building
+    needs: test  # Ensure tests pass before building
     runs-on: ubuntu-latest
 
     steps:

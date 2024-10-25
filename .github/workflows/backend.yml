@@ -53,7 +53,8 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: 'Build docker image with Cloud Build'
-        run: 
+        run: |
+          cd cloudbuild-docker-image
           gcloud builds submit --config cloudbuild_img.yaml
 
 
@@ -86,7 +87,8 @@ jobs:
       # Trigger Cloud Build to run the Packer script
       - name: Run Cloud Build for Packer
         run: |
-          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml
+          cd cloudbuild-packer-image
+          gcloud builds submit --config cloudbuild_packer_vm_img.yaml
 
 
   terraform-deploy:
@@ -117,6 +119,6 @@ jobs:
       # Trigger Cloud Build to run the Packer script
       - name: deploy with terraform
         run: |
-          cd terraform-deployments
+          cd terraform-deployment
           terraform init && terraform apply -auto-approve
           

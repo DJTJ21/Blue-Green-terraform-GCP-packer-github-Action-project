@@ -54,7 +54,7 @@ jobs:
 
       - name: 'Build docker image with Cloud Build'
         run: 
-          gcloud builds submit --config cloudbuild_img.yaml --stream
+          gcloud builds submit --config cloudbuild_img.yaml
 
 
    # Job for Google Cloud Build and Packer
@@ -86,7 +86,7 @@ jobs:
       # Trigger Cloud Build to run the Packer script
       - name: Run Cloud Build for Packer
         run: |
-          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml --stream
+          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml
 
 
   terraform-deploy:

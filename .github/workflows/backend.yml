@@ -52,10 +52,10 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: 'Run Cloud Build'
-        uses: 'google-github-actions/cloud-build@v1'
-        with:
-          project_id: '${{ secrets.GCP_PROJECT_ID }}'
-          config: 'cloudbuild.yaml'
+        run: 
+          gcloud builds submit --config cloudbuild_img.yaml
+
+
    # Job for Google Cloud Build and Packer
   packer-build:
     needs: image-build  # Ensure tests pass before building
@@ -80,4 +80,4 @@ jobs:
       # Trigger Cloud Build to run the Packer script
       - name: Run Cloud Build for Packer
         run: |
-          gcloud builds submit . --substitutions=_LOCATION="us-central1",_ZONE="us-central1-a",_VM_IMAGE_NAME="jss-cd-gce-vm-image",_PACKER_BUILDER_PROJECT="hsa-public"
+          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml  --substitutions=_LOCATION="us-central1",_ZONE="us-central1-a",_VM_IMAGE_NAME="jss-cd-gce-vm-image",_PACKER_BUILDER_PROJECT="hsa-public"

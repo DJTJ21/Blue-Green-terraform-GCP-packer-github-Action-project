@@ -86,4 +86,37 @@ jobs:
       # Trigger Cloud Build to run the Packer script
       - name: Run Cloud Build for Packer
         run: |
-          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml  --substitutions=_LOCATION="us-central1",_ZONE="us-central1-a",_VM_IMAGE_NAME="jss-cd-gce-vm-image",_PACKER_BUILDER_PROJECT="hsa-public"
+          gcloud builds submit --config packer-image/cloudbuild_packer_vm_img.yaml
+
+
+  terraform-deploy:
+    needs: packer-build  # Ensure tests pass before building
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 'Authenticating to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      # Set up Google Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # Authenticate Docker with Google Cloud Registry
+      - name: Authenticate Docker to Google Container Registry
+        run: gcloud auth configure-docker
+
+      # Trigger Cloud Build to run the Packer script
+      - name: Run Cloud Build for Packer
+        run: |
+          cd terraform-deployments
+          terraform init && terraform apply -auto-approve
+          

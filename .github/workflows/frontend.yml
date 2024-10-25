@@ -1,65 +1,84 @@
-name: Backend Tests and Cloud Build
+name: Frontend tests
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'api/pom.xml'
-      - 'api/src/**'
-      - '.github/workflows/backend.yml'
+      - 'frontend/**'
+      - '.github/workflows/frontend.yml'
   pull_request:
     branches:
       - main
     paths:
-      - 'api/pom.xml'
-      - 'api/src/**'
-      - '.github/workflows/backend.yml'
+      - 'frontend/**'
+      - '.github/workflows/frontend.yml'
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
   GCP_SA_KEY: ${{secrets.GCP_SA_KEY }}
 
-
 jobs:
-  test:
+  frontend-unit-tests:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        java-version: ["17"]
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java ${{ matrix.java-version }}
-        uses: actions/setup-java@v4
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          java-version: ${{ matrix.java-version }}
-          distribution: 'temurin'
-          cache: 'maven'
-          cache-dependency-path: 'api/pom.xml'
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: src/frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
 
       - name: Install dependencies
-        run: mvn -B install -DskipTests
-        working-directory: api
+        run: npm ci
+        working-directory: frontend
 
-      - name: Run tests
-        run: mvn -B test
-        working-directory: api
+      - name: Execute unit tests
+        run: npm test
+        working-directory: frontend
+
+  CloudBuild-docker-img:
+    needs: frontend-unit-tests # Ensure tests pass before building
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: 'Authenticating to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-      - name: 'Build docker image with Cloud Build'
-        run: 
+      # Set up Google Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # Trigger Cloud Build to run the Packer script
+      - name: Build docker image
+        run: |
           gcloud builds submit --config cloudbuild_img.yaml --stream
 
-
-   # Job for Google Cloud Build and Packer
-  packer-build:
-    needs: test  # Ensure tests pass before building
+     # Job for Google Cloud Build and Packer
+  CloudBuild-packer-img:
+    needs: CloudBuild-docker-img  # Ensure tests pass before building
     runs-on: ubuntu-latest
 
     steps:
@@ -90,7 +109,7 @@ jobs:
 
 
   terraform-deploy:
-    needs: packer-build  # Ensure tests pass before building
+    needs: CloudBuild-docker-img  # Ensure tests pass before building
     runs-on: ubuntu-latest
 
     steps:

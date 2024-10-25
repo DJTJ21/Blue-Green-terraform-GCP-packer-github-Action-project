@@ -15,6 +15,11 @@ on:
       - 'api/pom.xml'
       - 'api/src/**'
       - '.github/workflows/backend.yml'
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+  GCP_SA_KEY: ${{secrets.GCP_SA_KEY }}
+
 
 jobs:
   test:

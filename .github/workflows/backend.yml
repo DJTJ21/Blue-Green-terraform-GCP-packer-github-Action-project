@@ -58,7 +58,6 @@ jobs:
           gcloud builds submit --config cloudbuild.yaml
 
 
-   # Job for Google Cloud Build and Packer
   packer-build:
     needs: test  
     runs-on: ubuntu-latest

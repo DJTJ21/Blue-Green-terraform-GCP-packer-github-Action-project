@@ -119,5 +119,5 @@ jobs:
       - name: deploy with terraform
         run: |
           cd terraform-deployment
-          terraform init && terraform apply -auto-approve
+          terraform init && terraform apply -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
           

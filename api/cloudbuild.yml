@@ -1,0 +1,33 @@
+
+steps:
+  - id: configure-docker-authentication
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['auth', 'configure-docker', '-q']
+
+  - id: mvn-install
+ #   dir: 'api'
+    volumes:
+      - name: 'm2'
+        path: /root/.m2
+    name: 'maven:latest'
+    entrypoint: 'mvn'
+    args: ['install', '-DskipTests']
+
+  - id: build-and-push-api-docker-image
+  #  dir: api
+    volumes:
+      - name: 'm2'
+        path: /root/.m2
+    name: 'maven'
+    entrypoint: 'mvn'
+    env: ['LDS_IMAGE_NAME=gcr.io/${PROJECT_ID}/${_BACKEND_IMAGE_REPO_NAME}:${_BACKEND_IMAGE_TAG}']
+    args: ['compile', 'com.google.cloud.tools:jib-maven-plugin:3.3.1:build']
+
+substitutions:
+  _BACKEND_IMAGE_REPO_NAME: 'techworld-backend'
+  _BACKEND_IMAGE_TAG: 'latest'
+
+options:
+  machineType: 'E2_MEDIUM'
+  logging: 'CLOUD_LOGGING_ONLY'

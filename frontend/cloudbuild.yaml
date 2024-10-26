@@ -1,0 +1,33 @@
+steps:
+  - id: build-frontend-blue-docker-image
+  #  dir: frontend
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/${PROJECT_ID}/${_FRONTEND_IMAGE_REPO_NAME}:blue', '.']
+
+  - id: push-frontend-blue-docker-image
+  #  dir: frontend
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_FRONTEND_IMAGE_REPO_NAME}:blue']
+
+  - id: prepare-frontend-green-styles
+ #   dir: frontend
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'cp'
+    args: ['src/green.index.html', 'src/index.html']
+
+  - id: build-frontend-green-docker-image
+  #  dir: frontend
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/${PROJECT_ID}/${_FRONTEND_IMAGE_REPO_NAME}:green', '.']
+
+  - id: push-frontend-green-docker-image
+ #   dir: frontend
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_FRONTEND_IMAGE_REPO_NAME}:green']
+
+substitutions:
+  _FRONTEND_IMAGE_REPO_NAME: 'techworld-frontend'
+
+options:
+  machineType: 'E2_MEDIUM'
+  logging: 'CLOUD_LOGGING_ONLY'

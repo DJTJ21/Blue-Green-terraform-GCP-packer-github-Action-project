@@ -54,13 +54,13 @@ jobs:
 
       - name: 'Build docker image with Cloud Build'
         run: |
-          cd cloudbuild-docker-image
-          gcloud builds submit --config cloudbuild_img.yaml
+          cd api
+          gcloud builds submit --config cloudbuild.yaml
 
 
    # Job for Google Cloud Build and Packer
   packer-build:
-    needs: test  # Ensure tests pass before building
+    needs: test  
     runs-on: ubuntu-latest
 
     steps:

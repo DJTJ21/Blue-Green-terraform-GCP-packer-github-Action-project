@@ -1,4 +1,4 @@
-name: Backend Tests and Cloud Build
+name: Backend Tests , Cloud Build and terraform deploy
 
 on:
   push:
@@ -92,7 +92,7 @@ jobs:
 
 
   terraform-deploy:
-    needs: packer-build  # Ensure tests pass before building
+    needs: packer-build 
     runs-on: ubuntu-latest
 
     steps:
@@ -116,7 +116,7 @@ jobs:
       - name: Authenticate Docker to Google Container Registry
         run: gcloud auth configure-docker
 
-      # Trigger Cloud Build to run the Packer script
+      
       - name: deploy with terraform
         run: |
           cd terraform-deployment

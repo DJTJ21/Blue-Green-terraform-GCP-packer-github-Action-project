@@ -57,6 +57,10 @@ resource "google_project_iam_member" "cloud_deployment" {
     "roles/storage.objectAdmin",
     "roles/cloudsql.editor",
     "roles/logging.logWriter",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/secretmanager.secretAccessor",
+    "roles/secretmanager.admin",
+    "roles/servicenetworking.networkAdmin",
   ])
 
   project = data.google_project.project.project_id

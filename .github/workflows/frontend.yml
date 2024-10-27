@@ -21,6 +21,7 @@ env:
 jobs:
   frontend-unit-tests:
     runs-on: ubuntu-latest
+    environment: Frontend
 
     strategy:
       matrix:
@@ -81,6 +82,7 @@ jobs:
   CloudBuild-packer-img:
     needs: CloudBuild-docker-img  # Ensure tests pass before building
     runs-on: ubuntu-latest
+    environment: Frontend
 
     steps:
       - name: Checkout repository
@@ -112,6 +114,7 @@ jobs:
   terraform-deploy:
     needs: CloudBuild-docker-img  # Ensure tests pass before building
     runs-on: ubuntu-latest
+    environment: Frontend
 
     steps:
       - name: Checkout repository
@@ -138,5 +141,5 @@ jobs:
       - name: deploy with terraform
         run: |
           cd terraform-deployments
-          terraform init && terraform apply -auto-approve
+          terraform init && terraform destroy -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
           

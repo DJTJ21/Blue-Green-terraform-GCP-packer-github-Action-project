@@ -53,7 +53,7 @@ jobs:
           cd terraform-deployment
           terraform init
           terraform apply -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
-       # terraform init && terraform destroy --auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
+       
   test:
     runs-on: ubuntu-latest
     strategy:

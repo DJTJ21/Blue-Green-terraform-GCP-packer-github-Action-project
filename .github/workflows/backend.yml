@@ -21,41 +21,10 @@ env:
   GCP_SA_KEY: ${{secrets.GCP_SA_KEY }}
 
 
-jobs:
-  terraform-deploy:
-  #  needs: packer-build 
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 'Authenticating to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      # Set up Google Cloud SDK
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-
-      
-      - name: Authenticate Docker to Google Container Registry
-        run: gcloud auth configure-docker
-
-      # run terraform to deploy infrastructure
-      - name: deploy with terraform
-        run: |
-          cd terraform-deployment
-          terraform init
-          terraform apply -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
-       
+jobs:  
   test:
     runs-on: ubuntu-latest
+    environment: Backend
     strategy:
       matrix:
         java-version: ["17"]
@@ -93,6 +62,7 @@ jobs:
   packer-build:
     needs: test  
     runs-on: ubuntu-latest
+    environment: Backend
 
     steps:
       - name: Checkout repository
@@ -120,5 +90,37 @@ jobs:
         run: |
           cd cloudbuild-packer-image
           gcloud builds submit --config cloudbuild_packer_vm_img.yaml
+  terraform-deploy:
+    needs: packer-build 
+    runs-on: ubuntu-latest
+    environment: Backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 'Authenticating to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      # Set up Google Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      
+      - name: Authenticate Docker to Google Container Registry
+        run: gcloud auth configure-docker
+
+      # run terraform to deploy infrastructure
+      - name: deploy with terraform
+        run: |
+          cd terraform-deployment
+          terraform init
+          terraform destroy -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
 
           

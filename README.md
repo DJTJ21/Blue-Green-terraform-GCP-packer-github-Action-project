@@ -1,39 +1,43 @@
-
-# Blue-Green Deployment on GCP with Terraform, Packer, and GitHub Actions
+# 🌟 Blue-Green Deployment on GCP with Terraform, Packer, and GitHub Actions 🌟
 
 Welcome to the **Blue-Green Deployment** project repository! This solution demonstrates a live feature change on a Java application deployed to customers using blue-green managed instance group deployments on Google Cloud Platform (GCP). The project automates the provisioning of infrastructure using Terraform, image building with Packer, and CI/CD pipelines with GitHub Actions.
 
-🌟 **Overview**  
+---
+
+## 📋 Overview
+
 This project enables the seamless deployment of changes to a live stateful service without disrupting downstream customers. It includes the automated setup of various GCP services that are crucial for building a resilient application infrastructure.
 
-### Key Features:
+### 🚀 Key Features
 - **Blue-Green Deployment**: Switch between two identical environments for reliable updates.
 - **Infrastructure as Code**: Automated deployment using Terraform, ensuring repeatability and scalability.
 - **Image Building**: Docker image and VM image construction using Packer, integrated into the CI/CD pipeline.
 - **CI/CD Integration**: Leverage GitHub Actions for continuous integration and deployment workflows.
 - **GCP Services**: Utilizes a range of Google Cloud services including:
-  - Google Compute Engine
-  - Cloud Load Balancing
-  - Service Networking
-  - Secret Manager
-  - Cloud Storage
-  - Cloud CDN
-  - Cloud SQL
-  - IAM
+  - 🌐 Google Compute Engine
+  - ⚙️ Cloud Load Balancing
+  - 🌉 Service Networking
+  - 🔐 Secret Manager
+  - ☁️ Cloud Storage
+  - 🚀 Cloud CDN
+  - 🗄️ Cloud SQL
+  - 🔑 IAM
 
-### Architecture Diagram
+## 🖼️ Architecture Diagram
 ![Architecture Diagram](assets/blue.svg)
 
-🚀 **Getting Started**
+---
 
-#### Prerequisites
+## ⚙️ Getting Started
+
+### 📦 Prerequisites
 Before you begin, ensure you have the following installed:
 - **Terraform**: Infrastructure as Code tool to automate deployment.
 - **GCP SDK**: Google Cloud SDK to interact with your GCP account.
 - **Docker**: For building and managing container images.
 - **Packer**: For creating machine images from source configurations.
 
-#### Quickstart
+### 🚀 Quickstart
 
 1. **Clone the Repository**:
    ```bash
@@ -42,7 +46,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 2. **Build Docker Image**:
-   Navigate to the `cloudbuild-docker-image` directory and run the following command:
+   Navigate to the `cloudbuild-docker-image` directory and run:
    ```bash
    gcloud builds submit --config cloudbuild.yaml
    ```
@@ -64,5 +68,7 @@ Before you begin, ensure you have the following installed:
    terraform apply -auto-approve -var "project_id=YOUR_PROJECT_ID" -var "source_image=YOUR_SOURCE_IMAGE"
    ```
 
-### Detailed Guide
+---
+
+## 📖 Detailed Guide
 For a complete step-by-step guide, including screenshots and detailed explanations, please refer to the blog post. This post covers all the necessary steps to successfully implement this project.

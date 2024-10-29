@@ -22,7 +22,7 @@ This project enables the seamless deployment of changes to a live stateful servi
   - IAM
 
 ### Architecture Diagram
-![Architecture Diagram](assets/blue-green.svg)
+![Architecture Diagram](assets/blue.svg)
 
 🚀 **Getting Started**
 

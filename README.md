@@ -24,7 +24,7 @@ This project enables the seamless deployment of changes to a live stateful servi
   - 🔑 IAM
 
 ## 🖼️ Architecture Diagram
-![Architecture Diagram](assets/blue.svg)
+![Architecture Diagram](assets/green.svg)
 
 ---
 
